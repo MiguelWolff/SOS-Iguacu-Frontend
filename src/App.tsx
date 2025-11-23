@@ -253,7 +253,7 @@ export default function App(): JSX.Element {
   useEffect(() => {
     if (!mapContainerRef.current) return
     if (mapRef.current) return
-    mapRef.current = L.map(mapContainerRef.current).setView([-25.4, -49.3], 10)
+    mapRef.current = L.map(mapContainerRef.current).setView([-25.4883, -52.5294], 14)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(mapRef.current)
@@ -299,11 +299,11 @@ export default function App(): JSX.Element {
   return (
     <div style={styles.container} className='app'>
       <aside style={styles.sidebar} className='sidebar'>
-        <div style={styles.logo}>🌀 VolunteerDash</div>
+        <div style={styles.logo}>🌀 SOS Iguaçu</div>
         <div style={{ ...styles.small, marginBottom: 12 }}>Painel de Voluntariado</div>
 
         <nav>
-          <button style={{ ...styles.menuBtn, ...(view === 'dashboard' ? styles.menuBtnActive : {}) }} onClick={() => setView('dashboard')}>Dashboard</button>
+          <button style={{ ...styles.menuBtn, ...(view === 'dashboard' ? styles.menuBtnActive : {}) }} onClick={() => setView('dashboard')}>Visão Geral</button>
           <button style={{ ...styles.menuBtn, ...(view === 'volunteers' ? styles.menuBtnActive : {}) }} onClick={() => setView('volunteers')}>Cadastrar voluntários</button>
           <button style={{ ...styles.menuBtn, ...(view === 'areas' ? styles.menuBtnActive : {}) }} onClick={() => setView('areas')}>Cadastrar áreas / CEP</button>
           <button style={{ ...styles.menuBtn, ...(view === 'donations' ? styles.menuBtnActive : {}) }} onClick={() => setView('donations')}>Cadastro de doações</button>
@@ -451,7 +451,7 @@ export default function App(): JSX.Element {
             <div className='form'>
               <h4>Nova área atingida</h4>
               <div className='input'><label>Nome da área</label><input value={aName} onChange={e => setAName(e.target.value)} /></div>
-              <div className='input'><label>CEP</label><input value={aCep} onChange={e => setACep(e.target.value)} placeholder='ex: 80010-000' /></div>
+              <div className='input'><label>CEP</label><input value={aCep} onChange={e => setACep(e.target.value)} placeholder='ex: 85340-000' /></div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={addArea} style={{ padding: 10, borderRadius: 8, border: 'none', background: '#2b6cb0', color: '#fff' }}>Salvar</button>
                 <button onClick={() => { setAName(''); setACep(''); }} style={{ padding: 10, borderRadius: 8 }}>Limpar</button>
