@@ -9,6 +9,41 @@ import autoTable from 'jspdf-autotable'
 // IMPORTS PARA GRÁFICOS
 import { PieChart, Pie, Cell, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts'
 
+const API_BASE = 'http://127.0.0.1:8000/'
+
+async function apiGet(path: string) {
+  const res = await fetch(API_BASE + path)
+  if (!res.ok) throw new Error('Erro no GET ' + path)
+  return res.json()
+}
+
+async function apiPost(path: string, body: any) {
+  const res = await fetch(API_BASE + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error('Erro no POST ' + path)
+  return res.json()
+}
+
+async function apiPut(path: string, body: any) {
+  const res = await fetch(API_BASE + path, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error('Erro no PUT ' + path)
+  return res.json()
+}
+
+async function apiDelete(path: string) {
+  const res = await fetch(API_BASE + path, { method: 'DELETE' })
+  if (!res.ok) throw new Error('Erro no DELETE ' + path)
+  return res.json()
+}
+
+
 type Volunteer = {
   id: string;
   name: string;
@@ -40,19 +75,30 @@ const uid = (p = 'id') => p + '_' + Math.random().toString(36).slice(2, 9)
 export default function App(): JSX.Element {
   const [view, setView] = useState<'dashboard' | 'volunteers' | 'areas' | 'donations' | 'reports' | 'analytics'>('dashboard')
 
-  const [volunteers, setVolunteers] = useState<Volunteer[]>(() => {
-    try { return JSON.parse(localStorage.getItem('vols') || '[]') } catch { return [] }
-  })
-  const [areas, setAreas] = useState<Area[]>(() => {
-    try { return JSON.parse(localStorage.getItem('areas') || '[]') } catch { return [] }
-  })
-  const [donations, setDonations] = useState<Donation[]>(() => {
-    try { return JSON.parse(localStorage.getItem('dons') || '[]') } catch { return [] }
-  })
+  const [volunteers, setVolunteers] = useState<Volunteer[]>([])
+  const [areas, setAreas] = useState<Area[]>([])
+  const [donations, setDonations] = useState<Donation[]>([])
 
-  useEffect(() => { localStorage.setItem('vols', JSON.stringify(volunteers)) }, [volunteers])
-  useEffect(() => { localStorage.setItem('areas', JSON.stringify(areas)) }, [areas])
-  useEffect(() => { localStorage.setItem('dons', JSON.stringify(donations)) }, [donations])
+
+  useEffect(() => {
+    async function loadAll() {
+      try {
+        const [vols, ars, dons] = await Promise.all([
+          apiGet('/volunteers'),
+          apiGet('/areas'),
+          apiGet('/donations')
+        ])
+        setVolunteers(vols)
+        setAreas(ars)
+        setDonations(dons)
+      } catch (e) {
+        console.error(e)
+        alert('Erro ao carregar dados do servidor')
+      }
+    }
+    loadAll()
+  }, [])
+  
 
   // volunteer form state
   const [vName, setVName] = useState('')
@@ -71,19 +117,23 @@ export default function App(): JSX.Element {
   // cep search
   const [cepSearch, setCepSearch] = useState('')
 
-  const addVolunteer = () => {
+  const addVolunteer = async () => {
     if (!vName.trim()) return alert('Informe o nome do voluntário')
-    const newV: Volunteer = {
-      id: uid('v'),
+  
+    const newV = {
       name: vName.trim(),
       phone: vPhone.trim(),
       email: vEmail.trim(),
       skills: vSkills.trim(),
       areaId: vArea || null
     }
-    setVolunteers(prev => [newV, ...prev])
+  
+    const saved = await apiPost('/volunteers', newV)
+    setVolunteers(prev => [saved, ...prev])
+  
     setVName(''); setVPhone(''); setVEmail(''); setVSkills(''); setVArea('')
   }
+  
 
   const lookupCep = async (cepRaw: string) => {
     const cep = cepRaw.replace(/[^0-9]/g, '')
@@ -111,25 +161,21 @@ export default function App(): JSX.Element {
       lat: undefined,
       lng: undefined
     }
-    setAreas(prev => [newA, ...prev])
+    const saved = await apiPost('/areas', newA)
+    setAreas(prev => [saved, ...prev])
     setAName(''); setACep(''); setAStatus('')
   }
 
-  const deleteArea = (id: string) => {
+  const deleteArea = async (id: string) => {
     if (!confirm('Tem certeza que deseja excluir esta área?')) return
-    
-    // 1. Remover a área
+  
+    await apiDelete(`/areas/${id}`)
+  
     setAreas(prev => prev.filter(a => a.id !== id))
-    
-    // 2. Remover vínculos em voluntários e doações
-    setVolunteers(prev =>
-      prev.map(v => (v.areaId === id ? { ...v, areaId: null } : v))
-    )
-
-    setDonations(prev =>
-      prev.map(d => (d.areaId === id ? { ...d, areaId: null } : d))
-    )
+    setVolunteers(prev => prev.map(v => (v.areaId === id ? { ...v, areaId: null } : v)))
+    setDonations(prev => prev.map(d => (d.areaId === id ? { ...d, areaId: null } : d)))
   }
+  
 
 
   const addDonation = () => {
@@ -140,7 +186,9 @@ export default function App(): JSX.Element {
       quantity: dQty,
       areaId: dArea || null
     }
-    setDonations(prev => [newD, ...prev])
+    const saved = await apiPost('/donations', newD)
+    setDonations(prev => [saved, ...prev])
+    
     setDDesc(''); setDQty(1); setDArea('')
   }
 
