@@ -115,6 +115,23 @@ export default function App(): JSX.Element {
     setAName(''); setACep(''); setAStatus('')
   }
 
+  const deleteArea = (id: string) => {
+    if (!confirm('Tem certeza que deseja excluir esta área?')) return
+    
+    // 1. Remover a área
+    setAreas(prev => prev.filter(a => a.id !== id))
+    
+    // 2. Remover vínculos em voluntários e doações
+    setVolunteers(prev =>
+      prev.map(v => (v.areaId === id ? { ...v, areaId: null } : v))
+    )
+
+    setDonations(prev =>
+      prev.map(d => (d.areaId === id ? { ...d, areaId: null } : d))
+    )
+  }
+
+
   const addDonation = () => {
     if (!dDesc.trim() || dQty <= 0) return alert('Informe a doação e quantidade')
     const newD: Donation = {
@@ -464,9 +481,25 @@ export default function App(): JSX.Element {
               <div className='table'>
                 {filteredAreas.length === 0 && <div className='small'>Nenhuma área localizada</div>}
                 {filteredAreas.map(a => (
-                  <div key={a.id} style={{ padding: '8px 0', borderBottom: '1px solid #f0f3f6' }}>
-                    <strong>{a.name} • {a.cep}</strong>
-                    <div className='small'>{a.city || '—'} • {a.state || '—'}</div>
+                  <div key={a.id} style={{ padding: '8px 0', borderBottom: '1px solid #f0f3f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <strong>{a.name} • {a.cep}</strong>
+                      <div className='small'>{a.city || '—'} • {a.state || '—'}</div>
+                    </div>
+                                
+                    <button
+                      onClick={() => deleteArea(a.id)}
+                      style={{
+                        padding: '6px 10px',
+                        background: '#e63946',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 6,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Excluir
+                    </button>
                   </div>
                 ))}
               </div>
