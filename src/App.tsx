@@ -84,9 +84,9 @@ export default function App(): JSX.Element {
     async function loadAll() {
       try {
         const [vols, ars, dons] = await Promise.all([
-          apiGet('/volunteers'),
-          apiGet('/areas'),
-          apiGet('/donations')
+          apiGet('api/voluntario'),
+          apiGet('api/area-afetada'),
+          apiGet('api/doacao')
         ])
         setVolunteers(vols)
         setAreas(ars)
@@ -128,7 +128,7 @@ export default function App(): JSX.Element {
       areaId: vArea || null
     }
   
-    const saved = await apiPost('/volunteers', newV)
+    const saved = await apiPost('api/voluntario', newV)
     setVolunteers(prev => [saved, ...prev])
   
     setVName(''); setVPhone(''); setVEmail(''); setVSkills(''); setVArea('')
@@ -161,7 +161,7 @@ export default function App(): JSX.Element {
       lat: undefined,
       lng: undefined
     }
-    const saved = await apiPost('/areas', newA)
+    const saved = await apiPost('api/area-afetada', newA)
     setAreas(prev => [saved, ...prev])
     setAName(''); setACep(''); setAStatus('')
   }
@@ -169,7 +169,7 @@ export default function App(): JSX.Element {
   const deleteArea = async (id: string) => {
     if (!confirm('Tem certeza que deseja excluir esta área?')) return
   
-    await apiDelete(`/areas/${id}`)
+    await apiDelete(`api/area-afetada/${id}`)
   
     setAreas(prev => prev.filter(a => a.id !== id))
     setVolunteers(prev => prev.map(v => (v.areaId === id ? { ...v, areaId: null } : v)))
@@ -178,7 +178,7 @@ export default function App(): JSX.Element {
   
 
 
-  const addDonation = () => {
+  const addDonation = async () => {
     if (!dDesc.trim() || dQty <= 0) return alert('Informe a doação e quantidade')
     const newD: Donation = {
       id: uid('d'),
@@ -186,7 +186,7 @@ export default function App(): JSX.Element {
       quantity: dQty,
       areaId: dArea || null
     }
-    const saved = await apiPost('/donations', newD)
+    const saved = await apiPost('api/doacao', newD)
     setDonations(prev => [saved, ...prev])
     
     setDDesc(''); setDQty(1); setDArea('')
