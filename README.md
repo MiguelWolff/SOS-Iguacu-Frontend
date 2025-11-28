@@ -164,13 +164,11 @@ Endpoints esperados:
 
 - A consulta de CEP usa `https://viacep.com.br/ws/{CEP}/json/`. Para obter latitude/longitude automaticamente, integre uma API de geocoding (Mapbox, Google Geocoding).
 - O mapa usa Leaflet; para mostrar marcadores, as áreas precisam ter `lat` e `lng` preenchidos.
-- Este é um front-end; para salvar dados entre dispositivos é necessário um backend.
+- Este é um front-end; para salvar os dados é necessário o rodar o backend em conjunto.
 
 ## 🎯 Próximos Passos
 
 - [ ] Adicionar geocoding para obter coordenadas automaticamente
-- [ ] Implementar autenticação/autorização
+- [ ] Alterar chamada de consulta CEP para o back SOS-Iguacu
 - [ ] Adicionar roteamento (React Router)
 - [ ] Melhorar tratamento de erros com feedback visual
-- [ ] Adicionar loading states
-- [ ] Implementar PWA para uso offline
