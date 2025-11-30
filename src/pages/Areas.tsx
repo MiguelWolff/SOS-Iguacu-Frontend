@@ -185,7 +185,7 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
                 {a.nome_identificacao} • {a.cep}
               </strong>
               <div style={{ fontSize: 13, color: '#666' }}>
-                {a.city || '—'} • {a.state || '—'}
+                {a.cidade || '—'} • {a.estado || '—'}
               </div>
             </div>
             <Button variant="danger" onClick={() => handleDelete(a.id)}>

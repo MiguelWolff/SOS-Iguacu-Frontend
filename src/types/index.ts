@@ -1,5 +1,5 @@
 export type Volunteer = {
-  id: string;
+  id: number|null;
   nome_completo: string;
   cpf?: string;
   data_nascimento?: string;
@@ -12,6 +12,7 @@ export type Volunteer = {
 };
 
 export type Area = {
+  id?: number|null;
   nome_identificacao: string;
   cep: string;
   cidade?: string;
