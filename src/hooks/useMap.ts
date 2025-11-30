@@ -33,7 +33,7 @@ export const useMap = (areas: Area[]) => {
       if (area.lat && area.lng) {
         const marker = L.marker([area.lat, area.lng]).addTo(mapRef.current!);
         marker.bindPopup(
-          `<strong>${area.name}</strong><br/>${area.cep} ${area.city || ''} ${area.state || ''}`
+          `<strong>${area.nome_identificacao}</strong><br/>${area.cep} ${area.city || ''} ${area.state || ''}`
         );
       }
     });

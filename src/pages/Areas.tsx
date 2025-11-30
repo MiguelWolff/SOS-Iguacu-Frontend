@@ -14,6 +14,13 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
   const [aName, setAName] = useState('');
   const [aCep, setACep] = useState('');
   const [aStatus, setAStatus] = useState('');
+  const [aCity, setACity] = useState('');
+  const [aState, setAState] = useState('');
+  const [aBairro, setABairro] = useState('');
+  const [aEndereco, setAEndereco] = useState('');
+  const [aTipoDesastre, setATipoDesastre] = useState('');
+  const [aPrioridade, setAPrioridade] = useState(1);
+  const [aNecessidades, setANecessidades] = useState('');
 
   const filteredAreas = useMemo(() => {
     if (!cepSearch.trim()) return areas;
@@ -32,21 +39,39 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
     setAStatus('Consultando CEP...');
     try {
       const cepData = await lookupCep(aCep);
+
+      const finalCity = aCity || cepData?.localidade || '';
+      const finalState = aState || cepData?.uf || '';
+      const finalBairro = aBairro || cepData?.bairro || '';
+      const finalEndereco = aEndereco || cepData?.logradouro || '';
       
-      const newArea: Omit<Area, 'id'> = {
-        name: aName.trim(),
-        cep: aCep.trim(),
-        city: cepData?.localidade,
-        state: cepData?.uf,
-        lat: undefined,
-        lng: undefined,
+      const payloadBackend = {
+        nome_identificacao: aName.trim(),
+        cep: aCep.replace(/\D/g, ''),
+        cidade: finalCity,
+        bairro: finalBairro,
+        estado: finalState,
+        endereco: finalEndereco,
+        tipo_desastre: aTipoDesastre,
+        nivel_prioridade: Number(aPrioridade),
+        necessidades_imediatas: aNecessidades,
       };
 
-      await addArea(newArea);
+      await addArea(payloadBackend);
+
       setAName('');
       setACep('');
+      setACity('');
+      setAState('');
+      setABairro('');
+      setAEndereco('');
+      setATipoDesastre('');
+      setAPrioridade(1);
+      setANecessidades('');
       setAStatus('');
+
     } catch (error) {
+      console.error(error);
       setAStatus('Erro ao consultar CEP');
       alert(error instanceof Error ? error.message : 'Erro ao salvar área');
     }
@@ -75,6 +100,50 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
           value={aCep}
           onChange={e => setACep(e.target.value)}
           placeholder="ex: 85340-000"
+        />
+        <Input 
+        label = "Cidade"
+        value = {aCity}
+        onChange={e => setACity(e.target.value)}
+        placeholder='Rio Bonito do Iguaçu'
+        />
+        <Input 
+        label='Estado'
+        value={aState}
+        onChange={e =>setAState(e.target.value)}
+        placeholder='Paraná'
+        />
+        <Input
+        label='Bairro'
+        value={aBairro}
+        onChange={e =>setABairro(e.target.value)}
+        placeholder='Centro'
+        />
+        <Input
+        label='Endereço'
+        value={aEndereco}
+        onChange={e => setAEndereco(e.target.value)}
+        placeholder='Av. Dom Pedro II, 563'
+        />
+        <Input
+        label='Desastre'
+        value={aTipoDesastre}
+        onChange={e => setATipoDesastre(e.target.value)}
+        placeholder='Tornado'
+        />
+        <Input
+        label='Prioridade'
+        type='number'
+        value={aPrioridade}
+        onChange={e => setAPrioridade(Number(e.target.value))}
+        min={1}
+        max={4}
+        />
+        <Input
+        label='Necessidades'
+        value={aNecessidades}
+        onChange={e => setANecessidades(e.target.value)}
+        placeholder='Cobertores e água potável'
         />
         <div style={{ display: 'flex', gap: 8 }}>
           <Button onClick={handleSubmit}>Salvar</Button>
@@ -113,7 +182,7 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
           >
             <div>
               <strong>
-                {a.name} • {a.cep}
+                {a.nome_identificacao} • {a.cep}
               </strong>
               <div style={{ fontSize: 13, color: '#666' }}>
                 {a.city || '—'} • {a.state || '—'}

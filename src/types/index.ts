@@ -1,26 +1,35 @@
 export type Volunteer = {
   id: string;
-  name: string;
-  phone?: string;
+  nome_completo: string;
+  cpf?: string;
+  data_nascimento?: string;
   email?: string;
-  skills?: string;
-  areaId?: string | null;
+  telefone?: string;
+  ddd: number;
+  estado?: string;
+  habilidade_principal?: string;
+  disponibilidade?: string;
 };
 
 export type Area = {
-  id: string;
-  name: string;
+  nome_identificacao: string;
   cep: string;
-  city?: string;
-  state?: string;
-  lat?: number;
-  lng?: number;
+  cidade?: string;
+  estado?: string;
+  endereco?: string;
+  tipo_desastre?: string;
+  nivel_prioridade: number;
+  status?: string;
+  necessidades_imediatas?: string;
 };
 
 export type Donation = {
-  id: string;
-  description: string;
-  quantity: number;
+  produto?: string;
+  tipo: string;
+  situacao?: string;
+  quantidade: number;
+  unidade_medida?: string;
+  quantidade_por_volume: number;
   areaId?: string | null;
 };
 
