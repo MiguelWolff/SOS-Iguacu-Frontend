@@ -15,8 +15,11 @@ export const useAreas = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiGet<Area[]>('api/regiao-afetada');
+
+      // CORREÇÃO: rota correta
+      const data = await apiGet<Area[]>('/api/regioes-afetadas/');
       setAreas(data);
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar áreas');
       console.error(err);
@@ -27,9 +30,12 @@ export const useAreas = () => {
 
   const addArea = async (area: Omit<Area, 'id'>) => {
     try {
-      const saved = await apiPost<Area>('api/regiao-afetada', area);
+      // CORREÇÃO: rota correta
+      const saved = await apiPost<Area>('/api/regioes-afetadas/', area);
+
       setAreas(prev => [saved, ...prev]);
       return saved;
+
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao adicionar área';
       setError(errorMessage);
@@ -37,10 +43,12 @@ export const useAreas = () => {
     }
   };
 
-  const deleteArea = async (id: string) => {
+  const deleteArea = async (id: number) => {
     try {
-      await apiDelete(`api/regiao-afetada/${id}`);
-      setAreas(prev => prev.filter(a => a.id !== id));
+      await apiDelete(`/api/regioes-afetadas/${id}/`);
+
+      setAreas(prev => prev.filter(a => Number(a.id) !== id));
+
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao excluir área';
       setError(errorMessage);
@@ -57,4 +65,3 @@ export const useAreas = () => {
     reload: loadAreas,
   };
 };
-

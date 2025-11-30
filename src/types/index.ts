@@ -1,37 +1,49 @@
 export type Volunteer = {
-  id: number|null;
+  id: string | null;
   nome_completo: string;
-  cpf?: string;
-  data_nascimento?: string;
-  email?: string;
-  telefone?: string;
-  ddd: number;
-  estado?: string;
-  habilidade_principal?: string;
-  disponibilidade?: string;
+  data_nascimento: string;
+  email?: string | null;
+  telefone: string;
+  ddd: string;
+  cidade: string;
+  estado: string;
+
+  habilidade_principal: string;
+  disponibilidade: string;
+
+  regiao_afetada_atuacao?: string | null;
 };
 
 export type Area = {
-  id?: number|null;
+  id?: string | null;
   nome_identificacao: string;
   cep: string;
-  cidade?: string;
-  estado?: string;
-  endereco?: string;
-  tipo_desastre?: string;
+  estado: string;
+  cidade: string;
+  bairro: string;
+  endereco: string;
+
+  tipo_desastre: string;
   nivel_prioridade: number;
-  status?: string;
-  necessidades_imediatas?: string;
+  status: string;
+
+  necessidades_imediatas: string;
+
+  lat?: number | null;
+  lng?: number | null;
 };
 
 export type Donation = {
-  produto?: string;
+  id?: string | null;
+  produto: string;
   tipo: string;
-  situacao?: string;
   quantidade: number;
-  unidade_medida?: string;
+  unidade_medida?: string | null;
   quantidade_por_volume: number;
-  areaId?: string | null;
+  situacao: string;
+
+  destino?: string | null;
+  entregue?: boolean;
 };
 
 export type ViewType = 'dashboard' | 'volunteers' | 'areas' | 'donations' | 'reports' | 'analytics';

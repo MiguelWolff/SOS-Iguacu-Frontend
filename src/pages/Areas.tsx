@@ -44,17 +44,18 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
       const finalState = aState || cepData?.uf || '';
       const finalBairro = aBairro || cepData?.bairro || '';
       const finalEndereco = aEndereco || cepData?.logradouro || '';
-      
-      const payloadBackend = {
+
+      const payloadBackend: Area = {
         nome_identificacao: aName.trim(),
         cep: aCep.replace(/\D/g, ''),
         cidade: finalCity,
         bairro: finalBairro,
         estado: finalState,
         endereco: finalEndereco,
-        tipo_desastre: aTipoDesastre,
+        tipo_desastre: aTipoDesastre || '',
         nivel_prioridade: Number(aPrioridade),
-        necessidades_imediatas: aNecessidades,
+        necessidades_imediatas: aNecessidades || '',
+        status: aStatus,
       };
 
       await addArea(payloadBackend);
@@ -77,8 +78,14 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number | null | undefined) => {
+    if (!id) {
+      alert('ID inválido');
+      return;
+    }
+
     if (!confirm('Tem certeza que deseja excluir esta área?')) return;
+
     try {
       await deleteArea(id);
     } catch (error) {
@@ -101,49 +108,55 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
           onChange={e => setACep(e.target.value)}
           placeholder="ex: 85340-000"
         />
-        <Input 
-        label = "Cidade"
-        value = {aCity}
-        onChange={e => setACity(e.target.value)}
-        placeholder='Rio Bonito do Iguaçu'
-        />
-        <Input 
-        label='Estado'
-        value={aState}
-        onChange={e =>setAState(e.target.value)}
-        placeholder='Paraná'
+        <Input
+          label="Cidade"
+          value={aCity}
+          onChange={e => setACity(e.target.value)}
+          placeholder="Rio Bonito do Iguaçu"
         />
         <Input
-        label='Bairro'
-        value={aBairro}
-        onChange={e =>setABairro(e.target.value)}
-        placeholder='Centro'
+          label="Estado"
+          value={aState}
+          onChange={e => setAState(e.target.value)}
+          placeholder="Paraná"
         />
         <Input
-        label='Endereço'
-        value={aEndereco}
-        onChange={e => setAEndereco(e.target.value)}
-        placeholder='Av. Dom Pedro II, 563'
+          label="Bairro"
+          value={aBairro}
+          onChange={e => setABairro(e.target.value)}
+          placeholder="Centro"
         />
         <Input
-        label='Desastre'
-        value={aTipoDesastre}
-        onChange={e => setATipoDesastre(e.target.value)}
-        placeholder='Tornado'
+          label="Endereço"
+          value={aEndereco}
+          onChange={e => setAEndereco(e.target.value)}
+          placeholder="Av. Dom Pedro II, 563"
         />
         <Input
-        label='Prioridade'
-        type='number'
-        value={aPrioridade}
-        onChange={e => setAPrioridade(Number(e.target.value))}
-        min={1}
-        max={4}
+          label="Desastre"
+          value={aTipoDesastre}
+          onChange={e => setATipoDesastre(e.target.value)}
+          placeholder="Tornado"
         />
         <Input
-        label='Necessidades'
-        value={aNecessidades}
-        onChange={e => setANecessidades(e.target.value)}
-        placeholder='Cobertores e água potável'
+          label="Prioridade"
+          type="number"
+          value={aPrioridade}
+          onChange={e => setAPrioridade(Number(e.target.value))}
+          min={1}
+          max={4}
+        />
+        <Input
+          label="Necessidades"
+          value={aNecessidades}
+          onChange={e => setANecessidades(e.target.value)}
+          placeholder="Cobertores e água potável"
+        />
+        <Input
+          label='Status'
+          value={aStatus}
+          onChange={e => setAStatus(e.target.value)}
+          placeholder='AGUARDANDO'
         />
         <div style={{ display: 'flex', gap: 8 }}>
           <Button onClick={handleSubmit}>Salvar</Button>
@@ -167,7 +180,9 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
       <div style={{ background: '#fff', padding: 12, borderRadius: 8 }}>
         <h4>Áreas encontradas</h4>
         {filteredAreas.length === 0 && (
-          <div style={{ fontSize: 13, color: '#666' }}>Nenhuma área localizada</div>
+          <div style={{ fontSize: 13, color: '#666' }}>
+            Nenhuma área localizada
+          </div>
         )}
         {filteredAreas.map(a => (
           <div
@@ -177,7 +192,7 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
               borderBottom: '1px solid #f0f3f6',
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'center',
+              alignItems: 'center'
             }}
           >
             <div>
@@ -188,7 +203,7 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
                 {a.cidade || '—'} • {a.estado || '—'}
               </div>
             </div>
-            <Button variant="danger" onClick={() => handleDelete(a.id)}>
+            <Button variant="danger" onClick={() => handleDelete(Number(a.id))}>
               Excluir
             </Button>
           </div>
@@ -197,4 +212,3 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
     </div>
   );
 };
-
