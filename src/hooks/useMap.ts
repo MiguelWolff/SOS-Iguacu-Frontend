@@ -8,37 +8,43 @@ export const useMap = (areas: Area[]) => {
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
 
+  // Inicializa mapa
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
     mapRef.current = L.map(mapContainerRef.current).setView(MAP_CENTER, MAP_ZOOM);
-    
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(mapRef.current);
   }, []);
 
+  // Atualiza marcadores
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // Remove marcadores existentes
-    mapRef.current.eachLayer((layer) => {
-      if ((layer as any)._icon) {
-        mapRef.current!.removeLayer(layer);
+    // Remover apenas marcadores existentes
+    mapRef.current.eachLayer(layer => {
+      if (layer instanceof L.Marker) {
+        mapRef.current?.removeLayer(layer);
       }
     });
 
-    // Adiciona novos marcadores
+    // Criar novos
     areas.forEach(area => {
-      if (area.lat && area.lng) {
+      if (typeof area.lat === 'number' && typeof area.lng === 'number') {
         const marker = L.marker([area.lat, area.lng]).addTo(mapRef.current!);
         marker.bindPopup(
-          `<strong>${area.name}</strong><br/>${area.cep} ${area.city || ''} ${area.state || ''}`
+          `
+            <strong>${area.nome_identificacao}</strong><br/>
+            CEP: ${area.cep}<br/>
+            ${area.cidade || ''} - ${area.estado || ''}
+          `
         );
       }
     });
+
   }, [areas]);
 
   return { mapContainerRef };
 };
-

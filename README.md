@@ -116,29 +116,35 @@ Este comando gera um relatório de cobertura em `coverage/` e verifica se os thr
 ## 📋 Funcionalidades
 
 ### Dashboard
+
 - KPIs (voluntários, áreas, doações)
 - Mapa interativo com marcadores das áreas
 - Gráficos de pizza e barras
 - Ranking de áreas mais atingidas
 
 ### Cadastro de Voluntários
+
 - Nome, telefone, email, skills
 - Vinculação opcional a área afetada
 
 ### Cadastro de Áreas
+
 - Consulta automática de CEP via ViaCEP
 - Busca por CEP
 - Exclusão de áreas
 
 ### Cadastro de Doações
+
 - Descrição e quantidade
 - Vinculação opcional a área
 
 ### Relatórios
+
 - Exportação em PDF (voluntários, áreas, doações)
 - Exportação em CSV (voluntários, áreas, doações)
 
 ### Analytics
+
 - Gráficos comparativos
 - Rankings detalhados
 - Análises de distribuição
@@ -152,11 +158,12 @@ http://127.0.0.1:8000/
 ```
 
 Endpoints esperados:
+
 - `GET /api/voluntario` - Lista voluntários
 - `POST /api/voluntario` - Cria voluntário
-- `GET /api/area-afetada` - Lista áreas
-- `POST /api/area-afetada` - Cria área
-- `DELETE /api/area-afetada/:id` - Exclui área
+- `GET /api/regiao-afetada` - Lista áreas
+- `POST /api/regiao-afetada` - Cria área
+- `DELETE /api/regiao-afetada/:id` - Exclui área
 - `GET /api/doacao` - Lista doações
 - `POST /api/doacao` - Cria doação
 

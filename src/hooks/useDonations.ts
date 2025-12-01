@@ -15,7 +15,7 @@ export const useDonations = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiGet<Donation[]>('api/doacao');
+      const data = await apiGet<Donation[]>('/api/doacao');
       setDonations(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar doações');
@@ -27,7 +27,7 @@ export const useDonations = () => {
 
   const addDonation = async (donation: Omit<Donation, 'id'>) => {
     try {
-      const saved = await apiPost<Donation>('api/doacao', donation);
+      const saved = await apiPost<Donation>('/api/doacao', donation);
       setDonations(prev => [saved, ...prev]);
       return saved;
     } catch (err) {
