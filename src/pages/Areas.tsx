@@ -13,7 +13,6 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
 
   const [aName, setAName] = useState('');
   const [aCep, setACep] = useState('');
-  const [aStatus, setAStatus] = useState('');
   const [aCity, setACity] = useState('');
   const [aState, setAState] = useState('');
   const [aBairro, setABairro] = useState('');
@@ -21,6 +20,7 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
   const [aTipoDesastre, setATipoDesastre] = useState('');
   const [aPrioridade, setAPrioridade] = useState(1);
   const [aNecessidades, setANecessidades] = useState('');
+  const [aStatusCep, setAStatusCep] = useState('');
 
   const filteredAreas = useMemo(() => {
     if (!cepSearch.trim()) return areas;
@@ -36,7 +36,7 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
       return;
     }
 
-    setAStatus('Consultando CEP...');
+    setAStatusCep('Consultando CEP...');
     try {
       const cepData = await lookupCep(aCep);
 
@@ -55,7 +55,6 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
         tipo_desastre: aTipoDesastre || '',
         nivel_prioridade: Number(aPrioridade),
         necessidades_imediatas: aNecessidades || '',
-        status: aStatus,
       };
 
       await addArea(payloadBackend);
@@ -69,16 +68,15 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
       setATipoDesastre('');
       setAPrioridade(1);
       setANecessidades('');
-      setAStatus('');
 
     } catch (error) {
       console.error(error);
-      setAStatus('Erro ao consultar CEP');
+      setAStatusCep('Erro ao consultar CEP');
       alert(error instanceof Error ? error.message : 'Erro ao salvar área');
     }
   };
 
-  const handleDelete = async (id: number | null | undefined) => {
+  const handleDelete = async (id: string | null | undefined) => {
     if (!id) {
       alert('ID inválido');
       return;
@@ -118,7 +116,7 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
           label="Estado"
           value={aState}
           onChange={e => setAState(e.target.value)}
-          placeholder="Paraná"
+          placeholder="PR"
         />
         <Input
           label="Bairro"
@@ -152,12 +150,6 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
           onChange={e => setANecessidades(e.target.value)}
           placeholder="Cobertores e água potável"
         />
-        <Input
-          label='Status'
-          value={aStatus}
-          onChange={e => setAStatus(e.target.value)}
-          placeholder='AGUARDANDO'
-        />
         <div style={{ display: 'flex', gap: 8 }}>
           <Button onClick={handleSubmit}>Salvar</Button>
           <Button
@@ -170,9 +162,9 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
             Limpar
           </Button>
         </div>
-        {aStatus && (
+        {aStatusCep && (
           <div style={{ fontSize: 13, color: '#666', marginTop: 8 }}>
-            {aStatus}
+            {aStatusCep}
           </div>
         )}
       </div>
@@ -203,7 +195,7 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
                 {a.cidade || '—'} • {a.estado || '—'}
               </div>
             </div>
-            <Button variant="danger" onClick={() => handleDelete(Number(a.id))}>
+            <Button variant="danger" onClick={() => handleDelete(a.id)}>
               Excluir
             </Button>
           </div>

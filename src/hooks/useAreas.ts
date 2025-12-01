@@ -17,7 +17,7 @@ export const useAreas = () => {
       setError(null);
 
       // CORREÇÃO: rota correta
-      const data = await apiGet<Area[]>('/api/regioes-afetadas/');
+      const data = await apiGet<Area[]>('/api/regiao-afetada');
       setAreas(data);
 
     } catch (err) {
@@ -31,7 +31,7 @@ export const useAreas = () => {
   const addArea = async (area: Omit<Area, 'id'>) => {
     try {
       // CORREÇÃO: rota correta
-      const saved = await apiPost<Area>('/api/regioes-afetadas/', area);
+      const saved = await apiPost<Area>('/api/regiao-afetada', area);
 
       setAreas(prev => [saved, ...prev]);
       return saved;
@@ -43,11 +43,11 @@ export const useAreas = () => {
     }
   };
 
-  const deleteArea = async (id: number) => {
+  const deleteArea = async (id: string) => {
     try {
-      await apiDelete(`/api/regioes-afetadas/${id}/`);
+      await apiDelete(`/api/regiao-afetada/${id}`);
 
-      setAreas(prev => prev.filter(a => Number(a.id) !== id));
+      setAreas(prev => prev.filter(a => a.id !== id)); 
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao excluir área';

@@ -25,7 +25,6 @@ export type Area = {
 
   tipo_desastre: string;
   nivel_prioridade: number;
-  status: string;
 
   necessidades_imediatas: string;
 
