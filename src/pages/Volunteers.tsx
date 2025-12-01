@@ -5,7 +5,7 @@ import { Input, Textarea, Select, Button } from '../components/ui';
 import type { Volunteer } from '../types';
 
 export const Volunteers: React.FC = () => {
-  const { volunteers, addVolunteer } = useVolunteers();
+  const { volunteers, addVolunteer, deleteVolunteer } = useVolunteers();
   const { areas } = useAreas();
 
   // FORM STATES
@@ -63,6 +63,21 @@ export const Volunteers: React.FC = () => {
       label: `${a.nome_identificacao} • ${a.cep}`,
     })),
   ];
+
+  const handleDelete = async (id: string | null | undefined) => {
+    if (!id) {
+      alert('ID inválido');
+      return;
+    }
+
+    if (!confirm('Tem certeza que deseja excluir esta área?')) return;
+
+    try {
+      await deleteVolunteer(id);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Erro ao excluir área');
+    }
+  };
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -189,11 +204,17 @@ export const Volunteers: React.FC = () => {
                 borderBottom: '1px solid #f0f3f6',
               }}
             >
-              <strong>{v.nome_completo}</strong>
-              <div style={{ fontSize: 13, color: '#666' }}>
-                {v.habilidade_principal} • {v.telefone} • {v.email} • Área: {area?.nome_identificacao || '—'}
+              <div>
+                <strong>{v.nome_completo}</strong>
+                <div style={{ fontSize: 13, color: '#666' }}>
+                  {v.habilidade_principal} • {v.telefone} • {v.email} • Área: {area?.nome_identificacao || '—'}
+                </div>
               </div>
+              <Button variant="danger" onClick={() => handleDelete(v.id)}>
+                Excluir
+              </Button>
             </div>
+            
           );
         })}
       </div>

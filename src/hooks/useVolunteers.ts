@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { apiGet, apiPost } from '../services/api';
+import { apiDelete, apiGet, apiPost } from '../services/api';
 import type { Volunteer } from '../types';
 
 export const useVolunteers = () => {
@@ -15,7 +15,7 @@ export const useVolunteers = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiGet<Volunteer[]>('api/voluntario');
+      const data = await apiGet<Volunteer[]>('/api/voluntario');
       setVolunteers(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar voluntários');
@@ -27,11 +27,24 @@ export const useVolunteers = () => {
 
   const addVolunteer = async (volunteer: Omit<Volunteer, 'id'>) => {
     try {
-      const saved = await apiPost<Volunteer>('api/voluntario', volunteer);
+      const saved = await apiPost<Volunteer>('/api/voluntario', volunteer);
       setVolunteers(prev => [saved, ...prev]);
       return saved;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao adicionar voluntário';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    }
+  };
+
+  const deleteVolunteer = async (id: string) => {
+    try {
+      await apiDelete(`/api/voluntario/${id}`);
+
+      setVolunteers(prev => prev.filter(v => v.id !== id)); 
+
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao excluir voluntário';
       setError(errorMessage);
       throw new Error(errorMessage);
     }
@@ -43,6 +56,7 @@ export const useVolunteers = () => {
     error,
     addVolunteer,
     reload: loadVolunteers,
+    deleteVolunteer,
   };
 };
 
