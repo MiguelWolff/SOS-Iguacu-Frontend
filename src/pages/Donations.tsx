@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useDonations } from '../hooks/useDonations';
+import { useAreas } from '../hooks/useAreas';
 import { Input, Select, Button } from '../components/ui';
 import type { Donation } from '../types';
 
 export const Donations: React.FC = () => {
   const { donations, addDonation } = useDonations();
+  const { areas } = useAreas();
 
   const [dProduto, setDProduto] = useState('');
   const [dTipo, setDTipo] = useState('');
@@ -12,7 +14,7 @@ export const Donations: React.FC = () => {
   const [dUnidadeMedida, setDUnidadeMedida] = useState('');
   const [dQuantidadeVolume, setDQuantidadeVolume] = useState<number>(0);
   const [dSituacao, setDSituacao] = useState('');
-  const [dDestino, setDDestino] = useState('');
+  const [dArea, setDArea] = useState<string>('');
   const [dEntregue, setDEntregue] = useState<boolean>(false);
 
   const handleSubmit = async () => {
@@ -28,7 +30,7 @@ export const Donations: React.FC = () => {
       unidade_medida: dUnidadeMedida.trim() || null,
       quantidade_por_volume: dQuantidadeVolume,
       situacao: dSituacao.trim(),
-      destino: dDestino.trim() || null,
+      destino: dArea === '' ? null : dArea,
       entregue: dEntregue,
     };
 
@@ -42,21 +44,48 @@ export const Donations: React.FC = () => {
       setDUnidadeMedida('');
       setDQuantidadeVolume(0);
       setDSituacao('');
-      setDDestino('');
+      setDArea('');
       setDEntregue(false);
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Erro ao salvar doação');
     }
   };
 
+  const areaOptions = [
+    { value: '', label: '— Nenhuma —' },
+    ...areas.map(a => ({
+      value: String(a.id),
+      label: `${a.nome_identificacao} • ${a.cep}`,
+    })),
+  ];
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
       <div style={{ background: '#fff', padding: 12, borderRadius: 8 }}>
         <h4>Registrar doação</h4>
 
-        <Input label="Produto" value={dProduto} onChange={e => setDProduto(e.target.value)} />
+        <Input
+          label="Produto"
+          value={dProduto}
+          onChange={e => setDProduto(e.target.value)}
+        />
 
-        <Input label="Tipo" value={dTipo} onChange={e => setDTipo(e.target.value)} />
+        <Select
+          label="Tipo"
+          value={dTipo}
+          onChange={e => setDTipo(e.target.value)}
+          options={[
+            { value: '', label: 'Selecione o tipo da doação'},
+            { value: 'AGUA', label: 'Água Potável' },
+            { value: 'ALIMENTO', label: 'Alimento Não Perecível' },
+            { value: 'ROUPA', label: 'Vestuário/Cama/Banho' },
+            { value: 'HIGIENE', label: 'Itens de Higiene' },
+            { value: 'MEDICAMENTO', label: 'Medicamentos' },
+            { value: 'DINHEIRO', label: 'Aporte Financeiro' },
+            { value: 'MATERIAL', label: 'Material para reforma' },
+            { value: 'OUTRO', label: 'Outros' },
+          ]}
+        />
 
         <Input
           label="Quantidade"
@@ -65,10 +94,21 @@ export const Donations: React.FC = () => {
           onChange={e => setDQuantidade(Number(e.target.value))}
         />
 
-        <Input
+        <Select
           label="Unidade de Medida"
           value={dUnidadeMedida}
           onChange={e => setDUnidadeMedida(e.target.value)}
+          options={[
+            { value: '', label: 'Selecione a unidade de medida da doação'},
+            { value: 'KG', label: 'Quilogramas (Kg)' },
+            { value: 'L', label: 'Litros (L)' },
+            { value: 'UN', label: 'Unidades (Un)' },
+            { value: 'CX', label: 'Caixas (Cx)' },
+            { value: 'PCT', label: 'Pacotes (Pct)' },
+            { value: 'FARDO', label: 'Fardos' },
+            { value: 'PALLET', label: 'Pallets' },
+            { value: 'OUTRO', label: 'Outro' },
+          ]}
         />
 
         <Input
@@ -78,17 +118,20 @@ export const Donations: React.FC = () => {
           onChange={e => setDQuantidadeVolume(Number(e.target.value))}
         />
 
-        <Input
+        <Select
           label="Situação"
           value={dSituacao}
           onChange={e => setDSituacao(e.target.value)}
+          options={[
+            { value: '', label: 'Selecione a situação da doação'},
+            { value: 'DISPONIVEL', label: 'Disponível / Em Estoque' },
+            { value: 'RESERVADO', label: 'Reservado para Região' },
+            { value: 'EM_TRANSITO', label: 'Em Trânsito / Saiu para Entrega' },
+            { value: 'ENTREGUE', label: 'Entregue ao Destino' },
+          ]}
         />
 
-        <Input
-          label="Destino"
-          value={dDestino}
-          onChange={e => setDDestino(e.target.value)}
-        />
+        <Select label="Destino" value={dArea} onChange={e => setDArea(e.target.value)} options={areaOptions} />
 
         <Select
           label="Entregue?"
@@ -104,10 +147,10 @@ export const Donations: React.FC = () => {
           <Button onClick={handleSubmit}>Salvar</Button>
         </div>
       </div>
-
+        
       <div style={{ background: '#fff', padding: 12, borderRadius: 8 }}>
         <h4>Doações registradas</h4>
-
+        
         {donations.length === 0 && (
           <div style={{ fontSize: 13, color: '#666' }}>Nenhuma doação</div>
         )}
@@ -122,7 +165,7 @@ export const Donations: React.FC = () => {
           >
             <strong>{d.produto}</strong>
             <div style={{ fontSize: 13, color: '#666' }}>
-              {d.tipo} • Qtd: {d.quantidade} • Volume: {d.quantidade_por_volume} • Situacao: {d.situacao} •
+              {d.tipo} • Qtd: {d.quantidade} • Volume: {d.quantidade_por_volume} • Situação: {d.situacao} •
               Entregue: {d.entregue ? 'Sim' : 'Não'}
             </div>
           </div>

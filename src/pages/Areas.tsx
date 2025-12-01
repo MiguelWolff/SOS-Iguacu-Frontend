@@ -95,80 +95,103 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
       <div style={{ background: '#fff', padding: 12, borderRadius: 8 }}>
         <h4>Nova área atingida</h4>
-        <Input
-          label="Nome da área"
-          value={aName}
-          onChange={e => setAName(e.target.value)}
-        />
-        <Input
-          label="CEP"
-          value={aCep}
-          onChange={e => setACep(e.target.value)}
-          placeholder="ex: 85340-000"
-        />
-        <Input
-          label="Cidade"
-          value={aCity}
-          onChange={e => setACity(e.target.value)}
-          placeholder="Rio Bonito do Iguaçu"
-        />
-        <Input
-          label="Estado"
-          value={aState}
-          onChange={e => setAState(e.target.value)}
-          placeholder="PR"
-        />
-        <Input
-          label="Bairro"
-          value={aBairro}
-          onChange={e => setABairro(e.target.value)}
-          placeholder="Centro"
-        />
-        <Input
-          label="Endereço"
-          value={aEndereco}
-          onChange={e => setAEndereco(e.target.value)}
-          placeholder="Av. Dom Pedro II, 563"
-        />
-        <Input
-          label="Desastre"
-          value={aTipoDesastre}
-          onChange={e => setATipoDesastre(e.target.value)}
-          placeholder="Tornado"
-        />
-        <Input
-          label="Prioridade"
-          type="number"
-          value={aPrioridade}
-          onChange={e => setAPrioridade(Number(e.target.value))}
-          min={1}
-          max={4}
-        />
+
+        <Input label="Nome da área" value={aName} onChange={e => setAName(e.target.value)} />
+
+        <Input label="CEP" value={aCep} onChange={e => setACep(e.target.value)} placeholder="ex: 85340000" />
+
+        <Input label="Cidade" value={aCity} onChange={e => setACity(e.target.value)} placeholder="Rio Bonito do Iguaçu" />
+
+        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 12 }}>
+          <label style={{ marginBottom: 4 }}>Estado</label>
+          <select
+            value={aState}
+            onChange={e => setAState(e.target.value)}
+            style={{
+              padding: '8px 12px',
+              borderRadius: 6,
+              border: '1px solid #ccc',
+              fontSize: 14
+            }}
+          >
+            <option value="" disabled>Selecione o estado</option>
+            <option value="AC">Acre</option>
+            <option value="AL">Alagoas</option>
+            <option value="AP">Amapá</option>
+            <option value="AM">Amazonas</option>
+            <option value="BA">Bahia</option>
+            <option value="CE">Ceará</option>
+            <option value="DF">Distrito Federal</option>
+            <option value="ES">Espírito Santo</option>
+            <option value="GO">Goiás</option>
+            <option value="MA">Maranhão</option>
+            <option value="MT">Mato Grosso</option>
+            <option value="MS">Mato Grosso do Sul</option>
+            <option value="MG">Minas Gerais</option>
+            <option value="PA">Pará</option>
+            <option value="PB">Paraíba</option>
+            <option value="PR">Paraná</option>
+            <option value="PE">Pernambuco</option>
+            <option value="PI">Piauí</option>
+            <option value="RJ">Rio de Janeiro</option>
+            <option value="RN">Rio Grande do Norte</option>
+            <option value="RS">Rio Grande do Sul</option>
+            <option value="RO">Rondônia</option>
+            <option value="RR">Roraima</option>
+            <option value="SC">Santa Catarina (SC)</option>
+            <option value="SP">São Paulo</option>
+            <option value="SE">Sergipe</option>
+            <option value="TO">Tocantins</option>
+          </select>
+        </div>
+          
+        <Input label="Bairro" value={aBairro} onChange={e => setABairro(e.target.value)} placeholder="Centro" />
+          
+        <Input label="Endereço" value={aEndereco} onChange={e => setAEndereco(e.target.value)} placeholder="Av. Dom Pedro II, 563" />
+          
+        <Input label="Desastre" value={aTipoDesastre} onChange={e => setATipoDesastre(e.target.value)} placeholder="Tornado" />
+          
+        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 12 }}>
+          <label style={{ marginBottom: 4 }}>Prioridade</label>
+          <select
+            value={aPrioridade}
+            onChange={e => setAPrioridade(Number(e.target.value))}
+            style={{
+              padding: '8px 12px',
+              borderRadius: 6,
+              border: '1px solid #ccc',
+              fontSize: 14
+            }}
+          >
+            <option value="" disabled>Selecione a prioridade</option>
+            <option value={1}>Baixa - Monitoramento</option>
+            <option value={2}>Média - Danos Materiais</option>
+            <option value={3}>Alta - Desabrigados</option>
+            <option value={4}>Crítica - Risco de Vida / Calamidade Pública</option>
+          </select>
+        </div>
+          
         <Input
           label="Necessidades"
           value={aNecessidades}
           onChange={e => setANecessidades(e.target.value)}
           placeholder="Cobertores e água potável"
         />
+
         <div style={{ display: 'flex', gap: 8 }}>
           <Button onClick={handleSubmit}>Salvar</Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setAName('');
-              setACep('');
-            }}
-          >
+          <Button variant="secondary" onClick={() => { setAName(''); setACep(''); }}>
             Limpar
           </Button>
         </div>
+          
         {aStatusCep && (
           <div style={{ fontSize: 13, color: '#666', marginTop: 8 }}>
             {aStatusCep}
           </div>
         )}
       </div>
-
+      
       <div style={{ background: '#fff', padding: 12, borderRadius: 8 }}>
         <h4>Áreas encontradas</h4>
         {filteredAreas.length === 0 && (
@@ -188,9 +211,7 @@ export const Areas: React.FC<AreasProps> = ({ cepSearch }) => {
             }}
           >
             <div>
-              <strong>
-                {a.nome_identificacao} • {a.cep}
-              </strong>
+              <strong>{a.nome_identificacao} • {a.cep}</strong>
               <div style={{ fontSize: 13, color: '#666' }}>
                 {a.cidade || '—'} • {a.estado || '—'}
               </div>
